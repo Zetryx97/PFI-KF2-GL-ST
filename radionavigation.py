@@ -15,7 +15,7 @@ class Radionavigation:
     
     def obtenir_position_robot(self):
         #Démarrer la communication
-        self.ser.write(b'\r\r')
+        self.ser.write(b'\r\r') #séquence d'octets
         time.sleep(1)
 
         #Obtenir la position
