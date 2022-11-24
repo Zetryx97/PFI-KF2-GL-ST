@@ -1,20 +1,18 @@
 from moteur import Moteur
+from lidar import Lidar
 from time import sleep
 
 
 moteur = Moteur()
+lidar = Lidar()
 
 
+lidar.détecter_objet()
+sleep(0.5)
+lidar.détecter_objet()
+sleep(0.5)
+lidar.détecter_objet()
+sleep(0.5)
 
-while True:
-    moteur.avancer(0.3)
-    sleep(2)
-    moteur.reculer(0.3)
-    sleep(2)
-    moteur.tourner_droite(0.4)
-    sleep(5)
-    moteur.tourner_gauche(0.4)
-    sleep(5)
-    break
 print("C'est fini")
   
