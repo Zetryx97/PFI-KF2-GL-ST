@@ -11,24 +11,49 @@ class Radionavigation:
         self.ser.port = '/dev/ttyACM0'
         self.ser.baudrate = 115200
         self.ser.open()
-        self.position_robot = None #Référence sur la position du robot en Tout temps
+        self.ser.write(b'\r\r') #commande shell
+        sleep(1)
+        self.ser.write(b'lep\n')#commande shell
+        self.pos_robot_x = None
+        self.pos_robot_y = None
+        self.pos_robot_z = None
+        self.pourcentage_precis = None
         self.doit_continuer = True
 
-    
-    def obtenir_position_robot(self):
-        #Démarrer la communication
-        self.ser.write(b'\r\r') #séquence d'octets
-        sleep(1)
 
-        #Obtenir la position
-        self.ser.write(b'lep\n')
-        pos_robot = str(self.ser.readline())
+    def show_position_robot(self):
+        data = str(self.ser.readline())
 
-        #Formater la position correctement
-        pos_robot.split(',')
-        pos_robot.replace(',', '-')
+        #Convert data
+        self.updatePosRobot(data)
 
-        self.position_robot = pos_robot #retourne un tuple de 4 ou 5 éléments: (possiblement pos),Val X, Val Y, Val Z, val pourcentage de la précision des données reçues
+        print("POS: ")
+        print(self.pos_robot_x)
+        print(self.pos_robot_y)
+        print(self.pos_robot_z)
+        print(self.pourcentage_precis)
+        
+
+        
+
+    def updatePosRobot(self, data):
+         if("POS" in data and "dwm" not in data):
+            data = data.strip("b'")
+            data = data.strip("\r\n'")
+            data = data.strip("POS,")
+            data = data.split(',')
+            self.pos_robot_x = float(data[0])
+            self.pos_robot_y = float(data[1])
+            self.pos_robot_z = float(data[2])
+            self.pourcentage_precis = float(data[3])
+         else:
+            print("doesn't enter in condition")
+
+
+
+    def fermer_port_radionavigation(self):
+        self.ser.close()
+
 
     def demarrer_position(self):
         while self.doit_continuer: 
