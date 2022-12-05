@@ -1,6 +1,7 @@
 from radionavigation import Radionavigation
-from time import sleep
 from moteur import Moteur
+from time import sleep
+
 
 
 
@@ -11,13 +12,19 @@ from moteur import Moteur
 #sleep(1)
 #radio_navig.fermer_port_radionavigation()
 #sleep(1)
+moteur = Moteur()
+radio = Radionavigation()
+radio.show_position_robot()
+sleep(5)
+radio.show_position_robot()
+sleep(5)
+radio.show_position_robot()
+sleep(5)
+radio.show_position_robot()
+sleep(5)
+radio.show_position_robot()
+sleep(5)
+radio.show_position_robot()
+radio.doit_continuer = False
+print("fini!")
 
-moteur_robot = Moteur()
-
-
-moteur_robot .avancer(0.4)
-sleep(2)
-moteur_robot .freiner()
-sleep(2)
-moteur_robot .tourner_droite(0.7)
-sleep(3)

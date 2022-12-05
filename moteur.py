@@ -16,8 +16,8 @@ class Moteur :
         self.control_moteur_d = PWMOutputDevice(18) #permet d'allumer ou d'éteindre les 2 moteur de droite
     
     def avancer(self,speed):
-        self.moteur_avg.on()
-        self.moteur_arg.off()
+        self.moteur_avg.on()#roue off = recule, on = avancer
+        self.moteur_arg.off()#roue on = recule, off = avancer
         self.control_moteur_g.on()
         self.moteur_avd.on()
         self.moteur_ard.off()
@@ -38,22 +38,22 @@ class Moteur :
         self.control_moteur_d.value = speed
 
     def tourner_droite(self,speed):
-        self.moteur_avg.on()
-        self.moteur_arg.off()
+        self.moteur_avg.off()
+        self.moteur_arg.on()
         self.control_moteur_g.on()
-        self.moteur_avd.off()
-        self.moteur_ard.on()
+        self.moteur_avd.on()
+        self.moteur_ard.off()
         self.control_moteur_d.on()
 
         self.control_moteur_g.value = speed
         self.control_moteur_d.value = speed
 
     def tourner_gauche(self,speed):
-        self.moteur_avg.off()
-        self.moteur_arg.on()
+        self.moteur_avg.on()
+        self.moteur_arg.off()
         self.control_moteur_g.on()
-        self.moteur_avd.on()
-        self.moteur_ard.off()
+        self.moteur_avd.off()
+        self.moteur_ard.on()
         self.control_moteur_d.on()
 
         self.control_moteur_g.value = speed
