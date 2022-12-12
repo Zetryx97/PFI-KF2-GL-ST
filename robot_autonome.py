@@ -10,13 +10,17 @@ import threading
 
 
 class Robot_Autonome :
-    def __init__(self,position_cible):
+    def __init__(self,position_cible_x,position_cible_y):
         self.moteur = Moteur()
         self.lidar = Lidar()
         self.navi_inertielle = Navigation()
         self.radio_navigation = Radionavigation()
         self.robot_en_marche = True
-        self.position_cible = position_cible
+        self.position_cible_x = position_cible_x
+        self.position_cible_y = position_cible_y
+        self.orientation = 0
+        self.INTERVALLE_ACCEPTATION = 0.2
+        self.INTERVALLE_ANGLE = 2
 
 
     def demarrer_robot_autonome(self):
@@ -26,11 +30,59 @@ class Robot_Autonome :
         th_lidar.start()
         th_navi_inertielle.start()
         th_radio_navigation.start()
+        sleep(3)
         while self.robot_en_marche :
             sleep(0.5)
+            # rouler nos condition pour le mouvement: si objet detecter on freine ; algorythme de deplacement
+            if(self.lidar.objet_détecter):
+                self.navi_inertielle.etat = 0
+                self.moteur.freiner()
+            elif (self.radio_navigation.pos_robot_x < self.position_cible_x) and (self.radio_navigation.pos_robot_x - self.position_cible_x > self.INTERVALLE_ACCEPTATION):
+                # avancer vers 90 degres :: EST
+                self.navi_inertielle.etat = 1
+                self.Orienter_robot(90)
+                self.moteur.avancer(0.5)
+            elif (self.radio_navigation.pos_robot_x > self.position_cible_x) and (self.radio_navigation.pos_robot_x - self.position_cible_x > self.INTERVALLE_ACCEPTATION):
+                # avancer vers 270 degres :: OUEST
+                self.navi_inertielle.etat = 1
+                self.Orienter_robot(270)
+                self.moteur.avancer(0.5)
+            elif (self.radio_navigation.pos_robot_y < self.position_cible_y) and (self.radio_navigation.pos_robot_y - self.position_cible_y > self.INTERVALLE_ACCEPTATION):
+                # avancer vers 0 degres :: NORD
+                self.navi_inertielle.etat = 1
+                self.Orienter_robot(0)
+                self.moteur.avancer(0.5)
+            elif (self.radio_navigation.pos_robot_y > self.position_cible_y) and (self.radio_navigation.pos_robot_y - self.position_cible_y > self.INTERVALLE_ACCEPTATION):
+                # avancer vers 180 degres :: SUD
+                self.navi_inertielle.etat = 1
+                self.Orienter_robot(180)
+                self.moteur.avancer(0.5)
+            sleep(0.5)
+            self.moteur.freiner()
+            self.navi_inertielle.etat = 0
         self.lidar.doit_continuer = False
         self.navi_inertielle.doit_continuer = False
         self.radio_navigation.doit_continuer = False
+    
+    def Orienter_robot(self,orientation_cible):
+        orientation_cible_min = orientation_cible -  self.INTERVALLE_ANGLE
+        orientation_cible_max = orientation_cible +  self.INTERVALLE_ANGLE
+        if(orientation_cible_min < 0):
+            orientation_cible_min = orientation_cible_min + 360
+        if(orientation_cible_max > 360):
+            orientation_cible_max = orientation_cible_max - 360
+
+        if(self.navi_inertielle.angle_robot() < orientation_cible_max or self.navi_inertielle.angle_robot() > orientation_cible_min):
+            return None
+        elif(orientation_cible != 0):
+            #tourner jusqua temps d<etre egal a langle
+            while self.navi_inertielle.angle_robot() > orientation_cible_max or self.navi_inertielle.angle_robot() < orientation_cible_min:
+                self.moteur.tourner_droite(0.6)
+            self.moteur.freiner()
+        else :
+            while self.navi_inertielle.angle_robot() > orientation_cible_max or self.navi_inertielle.angle_robot() < orientation_cible_min:
+                self.moteur.tourner_droite(0.6)
+            self.moteur.freiner()
 
 # --- Étape à suivre pour le main ---
 # Minimum 3 thread : th1 = lidar , th2 = navigation inertielle, th3 = radionavigation, th4 = traiter les info des autres threads

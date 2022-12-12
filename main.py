@@ -1,30 +1,22 @@
 from radionavigation import Radionavigation
 from moteur import Moteur
 from time import sleep
+from navigation_inertielle import Navigation
+import threading
 
 
 
-
-#radio_navig = Radionavigation()
-
-
-#radio_navig.show_position_robot()
-#sleep(1)
-#radio_navig.fermer_port_radionavigation()
-#sleep(1)
 moteur = Moteur()
-radio = Radionavigation()
-radio.show_position_robot()
-sleep(5)
-radio.show_position_robot()
-sleep(5)
-radio.show_position_robot()
-sleep(5)
-radio.show_position_robot()
-sleep(5)
-radio.show_position_robot()
-sleep(5)
-radio.show_position_robot()
-radio.doit_continuer = False
-print("fini!")
+navi_inertielle = Navigation()
 
+th_navi_inertielle = threading.Thread(target=navi_inertielle.orientation_position)
+th_navi_inertielle.start()
+sleep(5)
+navi_inertielle.etat = 1
+angle = 180
+while navi_inertielle.angle_robot() > angle + 2   or navi_inertielle.angle_robot() < angle - 2:
+    print(navi_inertielle.angle_robot())
+    moteur.tourner_droite(0.5)
+moteur.arreter()
+sleep(5)
+navi_inertielle.doit_continuer = False

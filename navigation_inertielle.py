@@ -45,8 +45,7 @@ class Navigation:
                 self.gx_biais = gx
                 self.ay_biais = ay
                 self.ajout_val_tab_moyenne(self.tab_fenetre_gx,self.gx_biais)
-                self.ajout_val_tab_moyenne(self.tab_fenetre_ay,self.ay_biais)
-                                
+                self.ajout_val_tab_moyenne(self.tab_fenetre_ay,self.ay_biais)                
             elif self.etat == self.MOUVEMENT:
                 gx_corriger = gx - self.calculer_moyenne_fenetrer(self.tab_fenetre_gx)
                 self.angle_x += (delta_temps - self.last_delta_temps) * (gx_corriger + self.last_gx - self.calculer_moyenne_fenetrer(self.tab_fenetre_gx)) / 2
