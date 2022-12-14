@@ -3,11 +3,12 @@
 
 import serial
 from time import sleep
-
+from moteur import Moteur
 
 class Radionavigation:
     def __init__(self):
         self.ser = serial.Serial()
+        self.moteur = Moteur()
         self.ser.port = '/dev/ttyACM0'
         self.ser.baudrate = 115200
         self.ser.bytesize = serial.EIGHTBITS
@@ -27,7 +28,9 @@ class Radionavigation:
 
 
     def show_position_robot(self):
+        self.ser.open()
         data = str(self.ser.readline().decode("utf-8"))
+        self.ser.close()
         #Convert data
         self.updatePosRobot(data)
         
@@ -39,8 +42,8 @@ class Radionavigation:
             data = data.strip("'")
             data = data.strip("POS,")
             tab = data.split(',')
-            self.pos_robot_x = tab[0]
-            self.pos_robot_y = tab[1]
+            self.pos_robot_x = float(tab[0])
+            self.pos_robot_y = float(tab[1])
             self.pourcentage_precis = tab[3]
         else:
             self.pos_robot_x = None
@@ -48,11 +51,14 @@ class Radionavigation:
             self.pourcentage_precis = None
 
     def demarrer_position(self):
-        self.ser.open()
-        while self.doit_continuer: 
+        while self.doit_continuer:
+            if not self.pos_robot_x == None :
+                if self.pos_robot_x < 5 or self.pos_robot_x > 6:
+                    self.moteur.avancer(0.4)
             sleep(0.5)
+            self.moteur.freiner()
             self.show_position_robot()
-        self.ser.close()
+            print(self.pos_robot_x)
 
 if __name__ == "__main__":
     import threading

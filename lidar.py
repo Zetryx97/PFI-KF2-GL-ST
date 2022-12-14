@@ -14,7 +14,7 @@ class Lidar:
         self.dictio_données = None
         self.INTERVALLE_ANGLE_MIN = 160
         self.INTERVALLE_ANGLE_MAX = 220
-        self.INTERVALLE_MAX_DÉTECT = 120
+        self.INTERVALLE_MAX_DÉTECT = 90
         self.doit_continuer = True
 
     def détecter_objet(self):
@@ -30,8 +30,8 @@ class Lidar:
                     self.objet_détecter = False
                     while angle_a_verifier < self.INTERVALLE_ANGLE_MAX : 
                         if data[angle_a_verifier]/10 < self.INTERVALLE_MAX_DÉTECT:
-                            print("Object detected  at angle :" + str(angle_a_verifier))
-                            print(str(data[angle_a_verifier]))
+                            #print("Object detected  at angle :" + str(angle_a_verifier))
+                            #print(str(data[angle_a_verifier]))
                             self.objet_détecter = True
                         angle_a_verifier = angle_a_verifier + 1
                 self.déconnecter_lidar()
