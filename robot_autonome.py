@@ -24,11 +24,11 @@ class Robot_Autonome :
         th_navi_inertielle.start()
         th_radio_navigation = threading.Thread(target=self.radio_navigation.demarrer_position)
         th_radio_navigation.start()
+        #th_lidar = threading.Thread(target=self.lidar.détecter_objet)
+        #th_lidar.start()
 
 
     def demarrer_robot_autonome(self,position_cible_x,position_cible_y):
-        #th_lidar = threading.Thread(target=self.lidar.détecter_objet)
-        #th_lidar.start()
         sleep(3)
         while self.robot_en_marche :
             sleep(0.5)
@@ -75,7 +75,6 @@ class Robot_Autonome :
     def Orienter_robot(self,orientation_cible):
         # Tourner droite 0 -> 360 // anti-horraire
         # Tourner a gauche 0 -> 90 // horaire
-        print("je suis dans orienter")
         orientation_cible_min = orientation_cible -  self.INTERVALLE_ANGLE
         orientation_cible_max = orientation_cible +  self.INTERVALLE_ANGLE
         angle = self.navi_inertielle.angle_robot()
@@ -85,20 +84,20 @@ class Robot_Autonome :
         if orientation_cible == 0:
             while self.navi_inertielle.angle_robot() < self.ANGLE_ROTATION - self.INTERVALLE_ANGLE and self.navi_inertielle.angle_robot() > orientation_cible_max and self.orientation != 0:
                 if(self.navi_inertielle.angle_robot() < orientation_cible_max * 45 ) :
-                    self.moteur.tourner_droite(0.5)
+                    self.moteur.tourner_droite(0.4)
                 else:
-                    self.moteur.tourner_gauche(0.5)
+                    self.moteur.tourner_gauche(0.4)
             self.moteur.freiner()
         elif(angle < orientation_cible):
             # tourner a gauche
             while self.navi_inertielle.angle_robot() < orientation_cible_min and (self.orientation != orientation_cible or abs(self.navi_inertielle.angle_robot() - orientation_cible) > 5):
-                self.moteur.tourner_gauche(0.5)
+                self.moteur.tourner_gauche(0.4)
                 #print(self.navi_inertielle.angle_robot())
             self.moteur.freiner()
         else:
             #tourner a droite
             while self.navi_inertielle.angle_robot() > orientation_cible_max and (self.orientation != orientation_cible or abs(self.navi_inertielle.angle_robot() - orientation_cible) > 5):
-                self.moteur.tourner_droite(0.5)
+                self.moteur.tourner_droite(0.4)
                 #print(self.navi_inertielle.angle_robot())
             self.moteur.freiner()
         self.orientation = orientation_cible
