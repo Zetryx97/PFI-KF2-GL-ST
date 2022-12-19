@@ -1,10 +1,7 @@
 #Gabriel Lessard - Samy Tétrault
 #PFI KF2
-
 import time
 from time import sleep
-import threading
-from moteur import Moteur
 from icm20948 import ICM20948
 
 class Navigation:

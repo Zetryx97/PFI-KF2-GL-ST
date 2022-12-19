@@ -17,7 +17,7 @@ class Robot_Autonome :
         self.radio_navigation = Radionavigation()
         self.robot_en_marche = True
         self.orientation = 0
-        self.INTERVALLE_ACCEPTATION = 0.2
+        self.INTERVALLE_ACCEPTATION = 0.5
         self.INTERVALLE_ANGLE = 2
 
 
@@ -32,26 +32,32 @@ class Robot_Autonome :
         while self.robot_en_marche :
             sleep(0.5)
             # rouler nos condition pour le mouvement: si objet detecter on freine ; algorythme de deplacement
-            if(self.lidar.objet_détecter):
+            if(abs(float(self.radio_navigation.pos_robot_x) - position_cible_x) < self.INTERVALLE_ACCEPTATION and abs(float(self.radio_navigation.pos_robot_y) - position_cible_y) < self.INTERVALLE_ACCEPTATION) :
+                self.robot_en_marche = False
+            elif(self.lidar.objet_détecter):
                 self.navi_inertielle.etat = 0
                 self.moteur.freiner()
-            elif (float(self.radio_navigation.pos_robot_x) < position_cible_x) and (float(self.radio_navigation.pos_robot_x) - position_cible_x > self.INTERVALLE_ACCEPTATION):
+            elif (float(self.radio_navigation.pos_robot_x) < position_cible_x) and (abs(float(self.radio_navigation.pos_robot_x) - position_cible_x) > self.INTERVALLE_ACCEPTATION):
                 # avancer vers 90 degres :: EST
-                self.navi_inertielle.etat = 1
-                self.Orienter_robot(90)
-                self.moteur.avancer(0.4)
-            elif (float(self.radio_navigation.pos_robot_x) > position_cible_x) and (float(self.radio_navigation.pos_robot_x) - position_cible_x > self.INTERVALLE_ACCEPTATION):
-                # avancer vers 270 degres :: OUEST
+                print("condition 1")
                 self.navi_inertielle.etat = 1
                 self.Orienter_robot(270)
                 self.moteur.avancer(0.4)
-            elif (float(self.radio_navigation.pos_robot_y) < position_cible_y) and (float(self.radio_navigation.pos_robot_y) - position_cible_y > self.INTERVALLE_ACCEPTATION):
+            elif (float(self.radio_navigation.pos_robot_x) > position_cible_x) and (abs(float(self.radio_navigation.pos_robot_x) - position_cible_x) > self.INTERVALLE_ACCEPTATION):
+                # avancer vers 270 degres :: OUEST
+                print("condition 2")
+                self.navi_inertielle.etat = 1
+                self.Orienter_robot(90)
+                self.moteur.avancer(0.4)
+            elif (float(self.radio_navigation.pos_robot_y) < position_cible_y) and (abs(float(self.radio_navigation.pos_robot_y) - position_cible_y) > self.INTERVALLE_ACCEPTATION):
                 # avancer vers 0 degres :: NORD
+                print("condition 3")
                 self.navi_inertielle.etat = 1
                 self.Orienter_robot(0)
                 self.moteur.avancer(0.4)
-            elif (float(self.radio_navigation.pos_robot_y) > position_cible_y) and (float(self.radio_navigation.pos_robot_y) - position_cible_y > self.INTERVALLE_ACCEPTATION):
+            elif (float(self.radio_navigation.pos_robot_y) > position_cible_y) and (abs(float(self.radio_navigation.pos_robot_y) - position_cible_y) > self.INTERVALLE_ACCEPTATION):
                 # avancer vers 180 degres :: SUD
+                print("condition 4")
                 self.navi_inertielle.etat = 1
                 self.Orienter_robot(180)
                 self.moteur.avancer(0.4)
@@ -72,24 +78,28 @@ class Robot_Autonome :
         self.radio_navigation.doit_continuer = False
     
     def Orienter_robot(self,orientation_cible):
+        print("je suis dans orienter")
         orientation_cible_min = orientation_cible -  self.INTERVALLE_ANGLE
         orientation_cible_max = orientation_cible +  self.INTERVALLE_ANGLE
-        if(orientation_cible_min < 0):
-            orientation_cible_min = orientation_cible_min + 360
-        if(orientation_cible_max > 360):
-            orientation_cible_max = orientation_cible_max - 360
-
-        if(self.navi_inertielle.angle_robot() < orientation_cible_max or self.navi_inertielle.angle_robot() > orientation_cible_min):
+        angle = self.navi_inertielle.angle_robot()
+        if(angle < orientation_cible_max and angle > orientation_cible_min):
             return None
-        elif(orientation_cible != 0):
-            #tourner jusqua temps d'être égal a l'angle
-            while self.navi_inertielle.angle_robot() > orientation_cible_max or self.navi_inertielle.angle_robot() < orientation_cible_min:
-                self.moteur.tourner_droite(0.6)
+        if(angle < orientation_cible):
+            # tourner a gauche
+            while self.navi_inertielle.angle_robot() < orientation_cible_min:
+                self.moteur.tourner_gauche(0.4)
+                #print(self.navi_inertielle.angle_robot())
             self.moteur.freiner()
-        else :
-            while self.navi_inertielle.angle_robot() > orientation_cible_max or self.navi_inertielle.angle_robot() < orientation_cible_min:
-                self.moteur.tourner_droite(0.6)
+        else:
+            #tourner a droite
+            while self.navi_inertielle.angle_robot() > orientation_cible_max:
+                self.moteur.tourner_droite(0.4)
+                #print(self.navi_inertielle.angle_robot())
             self.moteur.freiner()
+
+
+
+
         #reecrire pour corriger le petit erreur d'angle
 
 
@@ -107,10 +117,11 @@ class Robot_Autonome :
 if __name__ == "__main__":
     robot_autonome = Robot_Autonome()
     robot_autonome.demarrer_robot_autonome(8.85,0)
-    #robot_autonome.demarrer_robot_autonome(8.85,2)
+    robot_autonome.demarrer_robot_autonome(8.85,2)
     #robot_autonome.demarrer_robot_autonome(7.5,1.8)
     #robot_autonome.demarrer_robot_autonome(6.75,0.3)
     #robot_autonome.demarrer_robot_autonome(5.75,1)
+    #robot_autonome.Orienter_robot(90)
 
 
   
